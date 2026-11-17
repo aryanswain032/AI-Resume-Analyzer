@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            color: white; font-family: 'Poppins', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 50px;
+            border-radius: 24px; width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: center;
+        }
+        h1 { color: #14b8a6; margin-bottom: 5px; font-size: 28px; font-weight: 600; }
+        p.subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+        
+        .demo-btn {
+            background: transparent; color: #38bdf8; border: 1px solid #38bdf8;
+            padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer;
+            margin-bottom: 20px; transition: 0.3s; width: 100%;
+        }
+        .demo-btn:hover { background: rgba(56, 189, 248, 0.1); }
+
+        /* Custom Upload Box */
+        .upload-area {
+            border: 2px dashed #14b8a6; border-radius: 12px; padding: 30px;
+            margin-bottom: 20px; background: rgba(20, 184, 166, 0.05);
+            cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .upload-area:hover { background: rgba(20, 184, 166, 0.15); }
+        .upload-area input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+        .upload-area p { margin: 0; color: #94a3b8; font-size: 14px; }
+
+        textarea {
+            width: 100%; box-sizing: border-box; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 15px;
+            border-radius: 12px; font-family: 'Poppins', sans-serif; resize: none;
+            margin-bottom: 25px; outline: none; font-size: 13px;
+        }
+        textarea:focus { border-color: #14b8a6; }
+
+        .btn {
+            width: 100%; padding: 15px; background: #14b8a6; color: #020617;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn:hover { background: #0d9488; box-shadow: 0 0 25px rgba(20, 184, 166, 0.8); transform: translateY(-2px); }
+        
+        .spinner {
+            display: none; width: 20px; height: 20px;
+            border: 3px solid #020617; border-top: 3px solid transparent;
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        <h1>AI Resume Analyzer</h1>
+        <p class="subtitle">Upload your resume and match it to your dream job.</p>
+        
+        {% if error %}
+            <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+                ⚠️ {{ error }}
+            </div>
+        {% endif %}
+
+        <button type="button" class="demo-btn" onclick="fillDemo()">✨ Fill Demo Job Description</button>
+
+        <form action="/analyze" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            
+            <div class="upload-area">
+                <!-- Added ID here to target it with JavaScript -->
+                <p id="fileNameDisplay">📁 Click or Drag file here to upload</p>
+                <!-- Added onchange event here -->
+                <input type="file" name="resume" id="resumeInput" accept=".pdf, .docx" required onchange="updateFileName()">
+            </div>
+
+            <textarea id="jobDesc" name="job_desc" rows="5" placeholder="Paste the Job Description here..." required></textarea>
+            
+            <button type="submit" class="btn" id="submitBtn">
+                <span id="btnText">Analyze Match 🚀</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // --- NEW FEATURE: SHOW FILE NAME ---
+        function updateFileName() {
+            const fileInput = document.getElementById('resumeInput');
+            const display = document.getElementById('fileNameDisplay');
+            
+            if (fileInput.files && fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                // Truncate long names so it doesn't break the design
+                const shortName = fileName.length > 25 ? fileName.substring(0, 22) + '...' : fileName;
+                display.innerHTML = `✅ <span style="color: #14b8a6; font-weight: 600;">${shortName}</span>`;
+            } else {
+                display.innerHTML = "📁 Click or Drag file here to upload";
+            }
+        }
+
+        function fillDemo() {
+            document.getElementById('jobDesc').value = "We are looking for a Junior Developer. Must know Python, HTML, CSS, and SQL. Experience with React is a plus.";
+        }
+
+        function showLoading() {
+            document.getElementById('btnText').innerText = "AI is Analyzing...";
+            document.getElementById('spinner').style.display = "block";
+            document.getElementById('submitBtn').style.opacity = "0.8";
+        }
+    </script>
+</body>
+</html>

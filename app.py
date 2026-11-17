@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import PyPDF2
 import docx
 import io
@@ -11,7 +11,16 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 
 
 @app.route('/')
-def home():
+def login():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def do_login():
+    # This accepts ANY username/password for the demo
+    return redirect(url_for('analyzer'))
+
+@app.route('/analyzer')
+def analyzer():
     return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
